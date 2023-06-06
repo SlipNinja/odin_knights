@@ -315,6 +315,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `* {
     padding: 0;
     margin: 0;
     color: brown;
+    font-size: 60px;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
