@@ -316,6 +316,45 @@ ___CSS_LOADER_EXPORT___.push([module.id, `* {
     margin: 0;
     color: brown;
     font-size: 60px;
+}
+
+
+#mainElement {
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    grid-auto-rows: 100vh;
+}
+
+#boardSide {
+    background-color: grey;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    aspect-ratio: 1 / 1;
+    height: 90%;
+    border: 4mm ridge rgba(32, 34, 6, 0.6);
+}
+
+.square {
+    aspect-ratio: 1 / 1;
+}
+
+.white {
+    background-color: whitesmoke;
+}
+
+.dark {
+    background-color: rgb(111, 44, 8);
+}
+
+#menuSide {
+    background-color: aquamarine;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
@@ -434,10 +473,61 @@ function buildPage() {
     const mainElement = document.createElement("div");
     mainElement.id = "mainElement";
 
-    mainElement.innerHTML = "HELLO WORLD";
+    const boardSide = document.createElement("div");
+    boardSide.id = "boardSide";
 
+    const menuSide = document.createElement("div");
+    menuSide.id = "menuSide";
+
+    boardSide.appendChild(buildBoard());
+
+    mainElement.appendChild(boardSide);
+    mainElement.appendChild(menuSide);
 
     document.body.appendChild(mainElement);
+}
+
+function buildBoard() {
+    const board = document.createElement("div");
+    board.id = "board";
+
+    for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+            const square = document.createElement("div");
+            square.classList.add("square");
+
+            if((i+j)%2 === 0){
+                square.classList.add("white");
+            } else {
+                square.classList.add("dark");
+            }
+
+            board.appendChild(square);
+        }
+    }
+
+    addClickEvents();
+
+    return board;
+}
+
+function addClickEvents(){
+    let squares = document.getElementsByClassName("square");
+
+    for (let i = 0; i < squares.length; i++) {
+
+        const row = Math.floor(index / 8);
+        const col = index % 8;
+
+        console.log("COUCOU");
+        squares[i].onclick = squareClicked(row, col);
+    }
+}
+
+function squareClicked(e, x, y){
+    console.log(typeof e);
+    console.log(x);
+    console.log(y);
 }
 
 
@@ -527,6 +617,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 (0,_pageBuilder__WEBPACK_IMPORTED_MODULE_1__.buildPage)();
+
 })();
 
 /******/ })()
