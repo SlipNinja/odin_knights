@@ -314,8 +314,6 @@ var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBP
 ___CSS_LOADER_EXPORT___.push([module.id, `* {
     padding: 0;
     margin: 0;
-    color: brown;
-    font-size: 60px;
 }
 
 
@@ -343,6 +341,14 @@ ___CSS_LOADER_EXPORT___.push([module.id, `* {
 
 .square {
     aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.imgContainer {
+    max-width: 90%;
+    max-height: 90%;
 }
 
 .white {
@@ -354,7 +360,32 @@ ___CSS_LOADER_EXPORT___.push([module.id, `* {
 }
 
 #menuSide {
-    background-color: aquamarine;
+    background-color: grey;
+    display: grid;
+    grid-template-rows: 100px 1fr;
+    padding: 5%;
+    justify-content: center;
+    align-items: center;
+}
+
+#btnProcess {
+    width: fit-content;
+    padding: 30px;
+    height: 90%;
+    font-size: 20px;
+    border: double thick rgb(32, 34, 6);
+    border-radius: 10px;
+    background-color: rgb(42, 48, 56);
+    color: white;
+}
+
+#btnProcess:hover {
+    box-shadow: 0px 0px 20px yellowgreen;
+}
+
+#btnProcess:active {
+    background-color: rgb(105, 110, 119);
+    color: black;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
@@ -468,6 +499,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   buildPage: () => (/* binding */ buildPage)
 /* harmony export */ });
+/* harmony import */ var _images_chevalier_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(12);
+/* harmony import */ var _images_treasure_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(13);
+/* harmony import */ var _knight_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(14);
+
+
+
+
 
 function buildPage() {
     const mainElement = document.createElement("div");
@@ -480,11 +518,14 @@ function buildPage() {
     menuSide.id = "menuSide";
 
     boardSide.appendChild(buildBoard());
+    menuSide.appendChild(buildProcessButton());
 
     mainElement.appendChild(boardSide);
     mainElement.appendChild(menuSide);
 
     document.body.appendChild(mainElement);
+
+    addBoardClickEvents();
 }
 
 function buildBoard() {
@@ -502,32 +543,193 @@ function buildBoard() {
                 square.classList.add("dark");
             }
 
+            const imgContainer = new Image();
+            imgContainer.classList.add("imgContainer")
+
+            square.appendChild(imgContainer);
             board.appendChild(square);
         }
     }
 
-    addClickEvents();
-
     return board;
 }
 
-function addClickEvents(){
-    let squares = document.getElementsByClassName("square");
+function buildProcessButton() {
+    const btnProcess = document.createElement("button");
+    btnProcess.id = "btnProcess";
+    btnProcess.innerHTML = "Find path to treasure";
+    btnProcess.onclick = (e) => {
+        const imgs = Object.values(document.getElementsByClassName('imgContainer'));
+        let start = null;
+        let end = null;
+
+        for (let i = 0; i < imgs.length; i++) {
+            const container = imgs[i];
+            if(container.src === _images_chevalier_png__WEBPACK_IMPORTED_MODULE_0__) start = indexToPosition(i);
+            if(container.src === _images_treasure_png__WEBPACK_IMPORTED_MODULE_1__) end = indexToPosition(i); 
+        }
+
+        if(start === null || end === null) return;
+        
+        console.log(`Start : ${start.x} - ${start.y}`);
+        console.log(`Treasure : ${end.x} - ${end.y}`);
+
+        const travel = (0,_knight_js__WEBPACK_IMPORTED_MODULE_2__.knightTravel)(start, end);
+
+        travel.forEach(position => {
+            console.log(position);
+        });
+    };
+
+    return btnProcess;
+}
+
+function addBoardClickEvents(){
+
+    let squares = document.getElementsByClassName('square');
 
     for (let i = 0; i < squares.length; i++) {
 
-        const row = Math.floor(index / 8);
-        const col = index % 8;
+        //const pos = indexToPosition(i);
 
-        console.log("COUCOU");
-        squares[i].onclick = squareClicked(row, col);
+        // Right click
+        squares[i].oncontextmenu = (e) => {
+            clearImgContainerFrom(_images_treasure_png__WEBPACK_IMPORTED_MODULE_1__);
+            squares[i].children[0].src = _images_treasure_png__WEBPACK_IMPORTED_MODULE_1__;
+            return false; // Cancel default contextual menu
+        };
+
+        // Left click
+        squares[i].onclick = (e) => {
+            clearImgContainerFrom(_images_chevalier_png__WEBPACK_IMPORTED_MODULE_0__);
+            squares[i].children[0].src = _images_chevalier_png__WEBPACK_IMPORTED_MODULE_0__;
+        };
     }
 }
 
-function squareClicked(e, x, y){
-    console.log(typeof e);
-    console.log(x);
-    console.log(y);
+function clearImgContainerFrom(img){
+    const imgs = Object.values(document.getElementsByClassName('imgContainer'));
+
+    imgs.map(function(container) { 
+        if(container.src === img) container.src = "";
+    });
+}
+
+function indexToPosition(index) {
+    const rowPos = Math.floor(index / 8);
+    const colPos = index % 8;
+
+    return { y : rowPos, x : colPos };
+}
+
+function positionToIndex(x, y){
+    return x + (y * 8);
+}
+
+
+
+/***/ }),
+/* 12 */
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "2b8c196ba89ec424fa2b.png";
+
+/***/ }),
+/* 13 */
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "1fbe1b4ee6917fffd2bf.png";
+
+/***/ }),
+/* 14 */
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   knightTravel: () => (/* binding */ knightTravel)
+/* harmony export */ });
+
+class KnightTree {
+    constructor(start, end){
+        this.root = new kPosition(start);
+        this.end = end;
+        this.endSquare = null;
+        this.possibleMoves = [
+            {x : -2, y : -1},
+            {x : -2, y : 1},
+            {x : 2, y : -1},
+            {x : 2, y : 1},
+            {x : -1, y : -2},
+            {x : 1, y : -2},
+            {x : -1, y : 2},
+            {x : 1, y : 2}
+        ]
+    }
+
+    buildTree(array = [this.root]){
+        if(this.endSquare !== null || array.length === 0) return;
+
+        const node = array.shift();
+        this.generateChilds(node);
+        array = array.concat(node.children);
+
+        this.endSquareFound(node);
+
+        this.buildTree(array);
+
+    }
+
+    endSquareFound(node){
+        node.children.forEach(child => {
+            if(child.pos.x === this.end.x && child.pos.y === this.end.y) {
+                this.endSquare = child;
+            }
+        });
+    }
+
+    generateChilds(node){
+        this.possibleMoves.forEach(move => {
+            const newPos = { x : node.pos.x + move.x, y : node.pos.y + move.y};
+            if(this.inGrid(newPos)){
+                node.children.push(new kPosition(newPos, node));
+            }
+        });
+    }
+
+    getPathToEnd(){
+        let nodes = this.getNodesToEnd();
+        return nodes.map(node => {
+            return node.pos;
+        });
+    }
+
+    getNodesToEnd(path = [this.endSquare]){
+        const node = path[0];
+        if(node.parent === null) return path;
+        path.unshift(node.parent);
+        return this.getNodesToEnd(path);
+    }
+
+    inGrid(pos){
+        return (pos.x < 8) && (pos.x >= 0) && (pos.y < 8) && (pos.y >= 0);
+    }
+}
+
+class kPosition {
+    constructor(pos, parent = null) {
+        this.pos = pos;
+        this.children = [];
+        this.parent = parent;
+    }
+}
+
+function knightTravel(start, end) {
+    const tree = new KnightTree(start, end);
+
+    tree.buildTree();
+    const path = tree.getPathToEnd();
+
+    return path;
 }
 
 
@@ -585,6 +787,18 @@ function squareClicked(e, x, y){
 /******/ 		};
 /******/ 	})();
 /******/ 	
+/******/ 	/* webpack/runtime/global */
+/******/ 	(() => {
+/******/ 		__webpack_require__.g = (function() {
+/******/ 			if (typeof globalThis === 'object') return globalThis;
+/******/ 			try {
+/******/ 				return this || new Function('return this')();
+/******/ 			} catch (e) {
+/******/ 				if (typeof window === 'object') return window;
+/******/ 			}
+/******/ 		})();
+/******/ 	})();
+/******/ 	
 /******/ 	/* webpack/runtime/hasOwnProperty shorthand */
 /******/ 	(() => {
 /******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
@@ -599,6 +813,29 @@ function squareClicked(e, x, y){
 /******/ 			}
 /******/ 			Object.defineProperty(exports, '__esModule', { value: true });
 /******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/publicPath */
+/******/ 	(() => {
+/******/ 		var scriptUrl;
+/******/ 		if (__webpack_require__.g.importScripts) scriptUrl = __webpack_require__.g.location + "";
+/******/ 		var document = __webpack_require__.g.document;
+/******/ 		if (!scriptUrl && document) {
+/******/ 			if (document.currentScript)
+/******/ 				scriptUrl = document.currentScript.src;
+/******/ 			if (!scriptUrl) {
+/******/ 				var scripts = document.getElementsByTagName("script");
+/******/ 				if(scripts.length) {
+/******/ 					var i = scripts.length - 1;
+/******/ 					while (i > -1 && !scriptUrl) scriptUrl = scripts[i--].src;
+/******/ 				}
+/******/ 			}
+/******/ 		}
+/******/ 		// When supporting browsers where an automatic publicPath is not supported you must specify an output.publicPath manually via configuration
+/******/ 		// or pass an empty string ("") and set the __webpack_public_path__ variable from your code to use your own logic.
+/******/ 		if (!scriptUrl) throw new Error("Automatic publicPath is not supported in this browser");
+/******/ 		scriptUrl = scriptUrl.replace(/#.*$/, "").replace(/\?.*$/, "").replace(/\/[^\/]+$/, "/");
+/******/ 		__webpack_require__.p = scriptUrl;
 /******/ 	})();
 /******/ 	
 /******/ 	/* webpack/runtime/nonce */
