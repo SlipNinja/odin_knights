@@ -1,5 +1,6 @@
 import knightImg from "./images/chevalier.png";
 import treasureImg from "./images/treasure.png";
+import markImg from "./images/mark.png";
 
 import { knightTravel } from './knight.js';
 
@@ -15,12 +16,14 @@ function buildPage() {
 
     boardSide.appendChild(buildBoard());
     menuSide.appendChild(buildProcessButton());
+    menuSide.appendChild(buildLogs());
 
     mainElement.appendChild(boardSide);
     mainElement.appendChild(menuSide);
 
     document.body.appendChild(mainElement);
 
+    resetLogs();
     addBoardClickEvents();
 }
 
@@ -53,7 +56,7 @@ function buildBoard() {
 function buildProcessButton() {
     const btnProcess = document.createElement("button");
     btnProcess.id = "btnProcess";
-    btnProcess.innerHTML = "Find path to treasure";
+    btnProcess.innerHTML = "Find path";
     btnProcess.onclick = (e) => {
         const imgs = Object.values(document.getElementsByClassName('imgContainer'));
         let start = null;
@@ -66,9 +69,6 @@ function buildProcessButton() {
         }
 
         if(start === null || end === null) return;
-        
-        //console.log(`Start : ${start.x} - ${start.y}`);
-        //console.log(`Treasure : ${end.x} - ${end.y}`);
 
         const travel = knightTravel(start, end);
         displayTravel(travel);
@@ -77,10 +77,57 @@ function buildProcessButton() {
     return btnProcess;
 }
 
+function buildLogs() {
+    const logs = document.createElement("div");
+    logs.id = "logs";
+
+    return logs;
+}
+
+function overwriteLogs(text = "") {
+    const logs = document.getElementById("logs");
+    logs.innerHTML = text;
+}
+
+function addLog(text = "") {
+    const logs = document.getElementById("logs");
+
+    const breakline = document.createElement("br");
+    const newLog = document.createTextNode(text);
+
+    logs.appendChild(breakline);
+    logs.appendChild(newLog);
+}
+
+function resetLogs() {
+    overwriteLogs("Welcome to knight travails !");
+    addLog();
+    addLog("Use LMB to place the knight");
+    addLog("Use RMB to place the treasure");
+    addLog("Press the button above to process the travel !");
+    addLog();
+}
+
 function displayTravel(travel) {
+    const start = travel.shift();
+    const end = travel.pop();
+
+    resetLogs();
+    addLog(`The knight starts at position ${start.x+1}:${start.y+1}`);
+
     travel.forEach(position => {
-        console.log(position);
+        addLog(`He goes to ${position.x+1}:${position.y+1}`);
+        addMarkAt(position);
     });
+
+    addLog(`And he reaches the treasure at ${end.x+1}:${end.y+1} !`);
+}
+
+function addMarkAt(position) {
+    const imgs = Object.values(document.getElementsByClassName('imgContainer'));
+    const index = positionToIndex(position.x, position.y);
+
+    imgs[index].src = markImg;
 }
 
 function addBoardClickEvents(){
@@ -89,11 +136,10 @@ function addBoardClickEvents(){
 
     for (let i = 0; i < squares.length; i++) {
 
-        //const pos = indexToPosition(i);
-
         // Right click
         squares[i].oncontextmenu = (e) => {
             clearImgContainerFrom(treasureImg);
+            clearImgContainerFrom(markImg);
             squares[i].children[0].src = treasureImg;
             return false; // Cancel default contextual menu
         };
@@ -101,6 +147,7 @@ function addBoardClickEvents(){
         // Left click
         squares[i].onclick = (e) => {
             clearImgContainerFrom(knightImg);
+            clearImgContainerFrom(markImg);
             squares[i].children[0].src = knightImg;
         };
     }
