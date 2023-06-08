@@ -319,7 +319,7 @@ ___CSS_LOADER_EXPORT___.push([module.id, `* {
 
 #mainElement {
     display: grid;
-    grid-template-columns: 3fr 1fr;
+    grid-template-columns: 4fr 2fr;
     grid-auto-rows: 100vh;
 }
 
@@ -360,19 +360,19 @@ ___CSS_LOADER_EXPORT___.push([module.id, `* {
 }
 
 #menuSide {
-    background-color: grey;
+    background-color: gray;
     display: grid;
     grid-template-rows: 100px 1fr;
-    padding: 5%;
-    justify-content: center;
-    align-items: center;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
 }
 
 #btnProcess {
-    width: fit-content;
-    padding: 30px;
+    width: 50%;
     height: 90%;
-    font-size: 20px;
+    font-size: 25px;
+    align-self: center;
     border: double thick rgb(32, 34, 6);
     border-radius: 10px;
     background-color: rgb(42, 48, 56);
@@ -386,6 +386,15 @@ ___CSS_LOADER_EXPORT___.push([module.id, `* {
 #btnProcess:active {
     background-color: rgb(105, 110, 119);
     color: black;
+}
+
+#logs {
+    width: 90%;
+    height: 80%;
+    padding: 10px;
+    background-color: rgb(151, 150, 150);
+    border: 2mm ridge rgba(37, 37, 37, 0.6);
+    font-size: 20px;
 }`, ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
@@ -501,7 +510,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _images_chevalier_png__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(12);
 /* harmony import */ var _images_treasure_png__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(13);
-/* harmony import */ var _knight_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(14);
+/* harmony import */ var _images_mark_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(14);
+/* harmony import */ var _knight_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15);
+
 
 
 
@@ -519,12 +530,14 @@ function buildPage() {
 
     boardSide.appendChild(buildBoard());
     menuSide.appendChild(buildProcessButton());
+    menuSide.appendChild(buildLogs());
 
     mainElement.appendChild(boardSide);
     mainElement.appendChild(menuSide);
 
     document.body.appendChild(mainElement);
 
+    resetLogs();
     addBoardClickEvents();
 }
 
@@ -557,7 +570,7 @@ function buildBoard() {
 function buildProcessButton() {
     const btnProcess = document.createElement("button");
     btnProcess.id = "btnProcess";
-    btnProcess.innerHTML = "Find path to treasure";
+    btnProcess.innerHTML = "Find path";
     btnProcess.onclick = (e) => {
         const imgs = Object.values(document.getElementsByClassName('imgContainer'));
         let start = null;
@@ -570,18 +583,65 @@ function buildProcessButton() {
         }
 
         if(start === null || end === null) return;
-        
-        console.log(`Start : ${start.x} - ${start.y}`);
-        console.log(`Treasure : ${end.x} - ${end.y}`);
 
-        const travel = (0,_knight_js__WEBPACK_IMPORTED_MODULE_2__.knightTravel)(start, end);
-
-        travel.forEach(position => {
-            console.log(position);
-        });
+        const travel = (0,_knight_js__WEBPACK_IMPORTED_MODULE_3__.knightTravel)(start, end);
+        displayTravel(travel);
     };
 
     return btnProcess;
+}
+
+function buildLogs() {
+    const logs = document.createElement("div");
+    logs.id = "logs";
+
+    return logs;
+}
+
+function overwriteLogs(text = "") {
+    const logs = document.getElementById("logs");
+    logs.innerHTML = text;
+}
+
+function addLog(text = "") {
+    const logs = document.getElementById("logs");
+
+    const breakline = document.createElement("br");
+    const newLog = document.createTextNode(text);
+
+    logs.appendChild(breakline);
+    logs.appendChild(newLog);
+}
+
+function resetLogs() {
+    overwriteLogs("Welcome to knight travails !");
+    addLog();
+    addLog("Use LMB to place the knight");
+    addLog("Use RMB to place the treasure");
+    addLog("Press the button above to process the travel !");
+    addLog();
+}
+
+function displayTravel(travel) {
+    const start = travel.shift();
+    const end = travel.pop();
+
+    resetLogs();
+    addLog(`The knight starts at position ${start.x+1}:${start.y+1}`);
+
+    travel.forEach(position => {
+        addLog(`He goes to ${position.x+1}:${position.y+1}`);
+        addMarkAt(position);
+    });
+
+    addLog(`And he reaches the treasure at ${end.x+1}:${end.y+1} !`);
+}
+
+function addMarkAt(position) {
+    const imgs = Object.values(document.getElementsByClassName('imgContainer'));
+    const index = positionToIndex(position.x, position.y);
+
+    imgs[index].src = _images_mark_png__WEBPACK_IMPORTED_MODULE_2__;
 }
 
 function addBoardClickEvents(){
@@ -590,11 +650,10 @@ function addBoardClickEvents(){
 
     for (let i = 0; i < squares.length; i++) {
 
-        //const pos = indexToPosition(i);
-
         // Right click
         squares[i].oncontextmenu = (e) => {
             clearImgContainerFrom(_images_treasure_png__WEBPACK_IMPORTED_MODULE_1__);
+            clearImgContainerFrom(_images_mark_png__WEBPACK_IMPORTED_MODULE_2__);
             squares[i].children[0].src = _images_treasure_png__WEBPACK_IMPORTED_MODULE_1__;
             return false; // Cancel default contextual menu
         };
@@ -602,6 +661,7 @@ function addBoardClickEvents(){
         // Left click
         squares[i].onclick = (e) => {
             clearImgContainerFrom(_images_chevalier_png__WEBPACK_IMPORTED_MODULE_0__);
+            clearImgContainerFrom(_images_mark_png__WEBPACK_IMPORTED_MODULE_2__);
             squares[i].children[0].src = _images_chevalier_png__WEBPACK_IMPORTED_MODULE_0__;
         };
     }
@@ -642,6 +702,12 @@ module.exports = __webpack_require__.p + "1fbe1b4ee6917fffd2bf.png";
 
 /***/ }),
 /* 14 */
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+module.exports = __webpack_require__.p + "4384fcf030784cba5429.png";
+
+/***/ }),
+/* 15 */
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
